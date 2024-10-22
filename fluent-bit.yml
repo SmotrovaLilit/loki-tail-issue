@@ -1,0 +1,21 @@
+service:
+  flush: 1
+  log_level: info
+  parsers_file: parsers.conf
+
+pipeline:
+  inputs:
+    - name: tail
+      tag: file
+      path: /var/logs/*.jsonl
+      parser: json
+      refresh_interval: 10
+
+  outputs:
+    - name: loki
+      match: '*'
+      host: loki
+      port: 3100
+      labels: job=logs, appName=$appName
+      retry_limit: 20
+      storage.total_limit_size: 1000M
